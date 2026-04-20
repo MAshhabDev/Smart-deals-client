@@ -1,26 +1,37 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../Context/AuthContext';
 import Swal from 'sweetalert2';
+import useAxiosSecure from '../../Hooks/useAxiosSecure';
 
 const MyBids = () => {
+
+    const axiosSecure = useAxiosSecure()
     const { user } = useContext(AuthContext);
     const [bids, setBids] = useState([]);
 
     useEffect(() => {
-        if (user?.email) {
-            fetch(`http://localhost:5000/bids?email=${user.email}`, {
-                headers: {
-                    authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+        axiosSecure.get(`bids?email=${user.email}`)
+            .then(data => {
+                console.log(data.data)
+                setBids(data.data)
             })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
-                    setBids(data);
-                })
-                .catch(error => console.log(error));
-        }
-    }, [user]);
+    }, [user, axiosSecure])
+
+    // useEffect(() => {
+    //     if (user?.email) {
+    //         fetch(`http://localhost:5000/bids?email=${user.email}`, {
+    //             headers: {
+    //                 authorization: `Bearer ${localStorage.getItem('token')}`
+    //             }
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => {
+    //                 console.log(data);
+    //                 setBids(data);
+    //             })
+    //             .catch(error => console.log(error));
+    //     }
+    // }, [user]);
 
     const handelDelete = (_id) => {
         Swal.fire({

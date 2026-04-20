@@ -1,8 +1,17 @@
 import axios from 'axios';
 import React from 'react';
 import Swal from 'sweetalert2';
+import useAuth from '../../Hooks/useAuth';
+import useAxios from '../../Hooks/useAxios';
+import useAxiosSecure from '../../Hooks/useAxiosSecure';
 
 const CreateAProduct = () => {
+
+    const { user } = useAuth()
+
+    const axiosSecure = useAxiosSecure()
+
+    const axiosInstance = useAxios()
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -12,22 +21,31 @@ const CreateAProduct = () => {
         const min_price = e.target.min_price.value;
         const max_price = e.target.max_price.value;
 
-        const newProduct = { title, image, min_price, max_price }
 
-        axios.post('http://localhost:5000/products', newProduct)
+
+        const newProduct = { title, image, min_price, max_price, email: user?.email, seller_name: user?.displayName }
+
+        axiosSecure.post('/products', newProduct)
             .then(data => {
                 console.log(data.data)
-                if (data.data.insertedId) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Your Product has been Created",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                }
             })
+
     }
+
+    //     axios.post('http://localhost:5000/products', newProduct)
+    //         .then(data => {
+    //             console.log(data.data)
+    //             if (data.data.insertedId) {
+    //                 Swal.fire({
+    //                     position: "top-end",
+    //                     icon: "success",
+    //                     title: "Your Product has been Created",
+    //                     showConfirmButton: false,
+    //                     timer: 1500
+    //                 });
+    //             }
+    //         })
+    // }
     return (
         <div className='lg:w-1/2  mx-auto'>
             <form onSubmit={handleSubmit}>
